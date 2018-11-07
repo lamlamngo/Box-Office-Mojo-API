@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-class WeekendEntry(object):
+class MovieWeekendEntry(object):
 
     def __init__(self, data):
         self.json = {}
@@ -15,6 +15,14 @@ class WeekendEntry(object):
         self.json[data[0]]["gross_to_date"] = data[7]
         self.json[data[0]]["week"] = data[8]
 
+class WeekenEntry(object):
+
+    def __init__(self, html):
+        self.html = html
+        self.json = {}
+    
+    def extract_data(self):
+        
 class Movie(object):
 
     def __init__(self, html):
@@ -98,4 +106,4 @@ class Movie(object):
                 for element in elements:
                     datas.append(element.find('font').string)
                 
-                self.json["weekends"].append(WeekendEntry(datas).json)
+                self.json["weekends"].append(MovieWeekendEntry(datas).json)
