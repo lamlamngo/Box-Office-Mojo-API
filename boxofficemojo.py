@@ -4,6 +4,7 @@ from itertools import cycle
 import traceback
 from bs4 import BeautifulSoup
 from movie import *
+import re
 
 class BoxOfficeMojo(object):
 
@@ -14,8 +15,6 @@ class BoxOfficeMojo(object):
     def __init__(self):
         self.year_weekend_url = {}
         self.latest = None
-        self.crawl_for_weekend_urls()
-        self.get_latest_weekend_stats()
     
     def get_proxies(self):
         url = 'https://free-proxy-list.net/'
@@ -29,7 +28,7 @@ class BoxOfficeMojo(object):
         return proxies
 
     def crawl_for_weekend_urls(self):
-        for year in range(2018,2019):
+        for year in range(2000,2019):
             url = self.WEEKEND_URLS.replace('!!!!', str(year))
             self.year_weekend_url[year] = {}
             page = requests.get(url, timeout=5)
@@ -48,7 +47,12 @@ class BoxOfficeMojo(object):
                             self.year_weekend_url[year][element.string.strip()] = self.BASE_URL + element['href']
 
     def get_specific_weekend_stats(self, date, limit=5):
-        pass
+        assert isinstance(date, str)
+        regular_expession = re.compile('\d{4}/\d{2}/\d{2}')
+        if regular_expession.match(date):
+            print ("correct format")
+        else:
+            print ("incorrect format")
 
     def get_latest_weekend_stats(self, limit=5):
         latest_url = self.year_weekend_url[2018][self.latest]
@@ -58,4 +62,7 @@ class BoxOfficeMojo(object):
             print (weekend.data[i])
 
 bom = BoxOfficeMojo()
+# bom.crawl_for_weekend_urls()
+# bom.get_latest_weekend_stats()
+bom.get_specific_weekend_stats("2018/15/12")
 
