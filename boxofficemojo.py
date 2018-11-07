@@ -5,12 +5,15 @@ import traceback
 from bs4 import BeautifulSoup
 from movie import *
 import re
+import datetime
 
 class BoxOfficeMojo(object):
 
     YEAR_START = 1982
     WEEKEND_URLS = "https://www.boxofficemojo.com/weekend/?yr=!!!!&sort=year&order=DESC&p=.htm" 
     BASE_URL = "https://www.boxofficemojo.com"
+    months = {'01' : 'Jan', '02' : 'Feb', '03' : 'Mar', '04' : 'Apr', '05' : 'May', '06': 'Jun', '07' : 'Jul', '08' : 'Aug', '09' : 'Sep', '10' : 'Oct', '11' : 'Nov', '12' : 'Dec'}
+    correct_date = [5,6,7]
 
     def __init__(self):
         self.year_weekend_url = {}
@@ -28,7 +31,7 @@ class BoxOfficeMojo(object):
         return proxies
 
     def crawl_for_weekend_urls(self):
-        for year in range(2000,2019):
+        for year in range(2018,2019):
             url = self.WEEKEND_URLS.replace('!!!!', str(year))
             self.year_weekend_url[year] = {}
             page = requests.get(url, timeout=5)
@@ -50,7 +53,32 @@ class BoxOfficeMojo(object):
         assert isinstance(date, str)
         regular_expession = re.compile('\d{4}/\d{2}/\d{2}')
         if regular_expession.match(date):
-            print ("correct format")
+            date_list = date.split('/')
+            year = date_list[0]
+            month = date_list[1]
+            day = date_list[2]
+
+            if month not in self.months or int(day) < 0 or int(day) > 31:
+                print ("in correct format") 
+            
+            if int(year) not in self.year_weekend_url:
+                print ("year not currently saved")
+
+            given_date = datetime.date(int(year), int(month), int(day))
+
+            if given_date.isoweekday() != 5:
+                print ("not correct start of date")
+            
+            to_check = self.months[month] + ". " + str(int(day))
+
+            for key in self.year_weekend_url[int(year)].keys():
+                if to_check in key:
+                    url = self.year_weekend_url[int(year)][key]
+                    weekend = Weekend(BeautifulSoup(requests.get(url, timeout=5).content, "html5lib"))
+
+                    for i in range(limit):
+                        print (weekend.data[i])
+                    break
         else:
             print ("incorrect format")
 
@@ -62,7 +90,7 @@ class BoxOfficeMojo(object):
             print (weekend.data[i])
 
 bom = BoxOfficeMojo()
-# bom.crawl_for_weekend_urls()
+bom.crawl_for_weekend_urls()
 # bom.get_latest_weekend_stats()
-bom.get_specific_weekend_stats("2018/15/12")
+bom.get_specific_weekend_stats("2018/08/03")
 
