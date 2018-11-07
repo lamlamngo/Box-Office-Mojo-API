@@ -3,31 +3,60 @@ from bs4 import BeautifulSoup
 
 class MovieWeekendEntry(object):
 
-    def __init__(self, data):
-        self.json = {}
-        self.json[data[0]] = {}
-        self.json[data[0]]["rank"] = data[1]
-        self.json[data[0]]["gross"] = data[2]
-        self.json[data[0]]["change"] = data[3]
-        self.json[data[0]]["theatres"] = data[4]
-        self.json[data[0]]["deltaTheatre"] = data[5]
-        self.json[data[0]]["avg"] = data[6]
-        self.json[data[0]]["gross_to_date"] = data[7]
-        self.json[data[0]]["week"] = data[8]
+    labels = ["rank", "gross", "change", "theatres", "deltaTheatre", "avg", "gross_to_date", "week"]
 
-class WeekenEntry(object):
+    def __init__(self, data):
+        assert len(data) == len(self.labels) + 1
+        self.json = {}
+        weekend = data[0]
+        self.json[weekend] = {}
+        data.pop(0)
+        for i in range(len(data)):
+            self.json[weekend][self.labels[i]] = data[i]
+
+class Weekend(object):
 
     def __init__(self, html):
+        assert isinstance(html, BeautifulSoup)
         self.html = html
-        self.json = {}
+        self.data = []
+        self.extract_data()
     
     def extract_data(self):
+        table = self.html.find('table',attrs={'border' : '0', 'cellspacing' : '1', 'cellpadding' : '5'})
+
+        if table is not None:
+            rows = table.find_all('tr')
+
+            for row in rows:
+                if row['bgcolor'] is not None and row['bgcolor'] != '#dcdcdc':
+                    datas = []
+                    elements = row.find_all('td')
+                    for element in elements:
+                        datas.append(element.find('font').string)
+                    self.data.append(WeekendEntry(datas).json)
+
+class WeekendEntry(object):
+
+    labels = ["this week", "last week", "title", "studio", "gross", "% change", "theatre count", "theatre change", "average", "total gross", "budget", "week #"]
+    
+    def __init__(self, data):
+        self.json = {}
+        self.json[data[2]] = {}
+        assert len(data) == len(self.labels)
+        self.fill_data(data)
+    
+    def fill_data(self, data):
+        for i in range(len(data)):
+            if i != 2:
+                self.json[data[2]][self.labels[i]] = data[i]
         
 class Movie(object):
 
     def __init__(self, html):
 
         self.json = {}
+        assert isinstance(html, BeautifulSoup)
         self.html = html
         self.base = "https://www.boxofficemojo.com/"
         self.extract_data()
