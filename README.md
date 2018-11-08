@@ -33,7 +33,7 @@ print (bom.get_specific_weekend_stats("2018/08/03")) #Note: date must be in this
 the output would be 
 
 Movie
-```json
+```javascript
 [{
     'title': 'Black Panther (2018)',
     'overview': {
@@ -98,7 +98,7 @@ Movie
 ```
 
 Latest Weekend Stats
-```json
+```javascript
 [{
     'Bohemian Rhapsody': {
         'this week': '1',
@@ -173,7 +173,7 @@ Latest Weekend Stats
 ```
 
 Specific Weekend Stats
-```json
+```javascript
 [{
     'Crazy Rich Asians': {
         'this week': '1',
