@@ -115,12 +115,6 @@ class Movie(object):
                                         if content.string is not None:
                                             if content.string != "" and content.string != 'cameo':
                                                 self.json["players"][category].append(content.string.strip())
-                                        # if '<a' not in content and 'br' not in content:
-                                        #     print (content)
-                                        #     self.json["players"][category].append(content.strip())
-                                        # elif '<a' in content:
-                                        #     print (content)
-                                        #     self.json["players"][category].append(content.string.strip())
 
         overview = self.html.find('center')    
         components = overview.findAll('td', attrs={'valign' : 'top'})
@@ -139,18 +133,19 @@ class Movie(object):
 
         weekend_content = BeautifulSoup(weekends.content, "html5lib")
 
-        table = weekend_content.find('table', attrs = {'border' : '0', 'cellspacing' : '0', 'cellpadding' : '5', 'class' : 'chart-wide'})
+        tables = weekend_content.find_all('table', attrs = {'border' : '0', 'cellspacing' : '0', 'cellpadding' : '5', 'class' : 'chart-wide'})
 
-        rows = table.find_all('tr')
+        if len(tables) > 0:
+            rows = tables[-1].find_all('tr')
 
-        self.json["weekends"] = []
+            self.json["weekends"] = []
 
-        for row in rows:
-            if row['bgcolor'] is not None and row['bgcolor'] != '#dcdcdc':
-                datas = []
-                elements = row.find_all('td')
+            for row in rows:
+                if row['bgcolor'] is not None and row['bgcolor'] != '#dcdcdc':
+                    datas = []
+                    elements = row.find_all('td')
 
-                for element in elements:
-                    datas.append(element.find('font').string)
-                
-                self.json["weekends"].append(MovieWeekendEntry(datas).json)
+                    for element in elements:
+                        datas.append(element.find('font').string)
+                    
+                    self.json["weekends"].append(MovieWeekendEntry(datas).json)

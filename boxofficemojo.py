@@ -110,7 +110,6 @@ class BoxOfficeMojo(object):
                 keys.append(key)
         for key in keys:
             url = self.BASE_URL + self.movies_url[key]
-            print (url)
             soup = BeautifulSoup(requests.get(url,timeout=5).content, "html5lib")
             to_return.append(Movie(soup).json)
         return to_return
@@ -176,9 +175,10 @@ class BoxOfficeMojo(object):
                     url = self.year_weekend_url[year][key]
                     weekend = Weekend(BeautifulSoup(requests.get(url, timeout=5).content, "html5lib"))
 
+                    to_return = []
                     for i in range(limit):
-                        print (weekend.data[i])
-                    break
+                        to_return.append(weekend.data[i])
+                    return to_return
         else:
             print ("incorrect format")
             return []
@@ -189,11 +189,13 @@ class BoxOfficeMojo(object):
         date = "%d/%s/%s" % (recent_friday.year, str(recent_friday.month).zfill(2), str(recent_friday.day).zfill(2))
         return self.get_specific_weekend_stats(date, limit = limit)
 
+
 bom = BoxOfficeMojo(movie_read_from_file=True, weekend_read_from_file=True)
-print (bom.get_movie_stats_by_name('batman v superman'))
-# bom.get_all_movie_links_in_page("")
-# bom.crawl_for_weekend_urls()
-# bom.get_latest_weekend_stats()
-# bom.get_specific_weekend_stats("2018/08/03")
+
+print (bom.get_movie_stats_by_name('black panther'))
+
+print (bom.get_latest_weekend_stats())
+
+print (bom.get_specific_weekend_stats("2018/08/03")) #Note: date must be in this format and the friday of that weekend
 
 
