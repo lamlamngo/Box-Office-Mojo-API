@@ -168,16 +168,17 @@ class BoxOfficeMojo(object):
                 print ("not correct start of date")
                 return []
             
-            to_check = self.months[month] + ". " + str(int(day))
+            to_check = self.months[month] + ". " + str(int(day)) + "–"
 
             for key in self.year_weekend_url[year].keys():
                 if to_check in key:
                     url = self.year_weekend_url[year][key]
                     weekend = Weekend(BeautifulSoup(requests.get(url, timeout=5).content, "html5lib"))
 
-                    to_return = []
+                    to_return = {}
+                    to_return[key] = []
                     for i in range(limit):
-                        to_return.append(weekend.data[i])
+                        to_return[key].append(weekend.data[i])
                     return to_return
         else:
             print ("incorrect format")
@@ -188,14 +189,5 @@ class BoxOfficeMojo(object):
         recent_friday = today - datetime.timedelta(days=today.weekday() + 3)
         date = "%d/%s/%s" % (recent_friday.year, str(recent_friday.month).zfill(2), str(recent_friday.day).zfill(2))
         return self.get_specific_weekend_stats(date, limit = limit)
-
-
-bom = BoxOfficeMojo(movie_read_from_file=True, weekend_read_from_file=True)
-
-print (bom.get_movie_stats_by_name('black panther'))
-
-print (bom.get_latest_weekend_stats())
-
-print (bom.get_specific_weekend_stats("2018/08/03")) #Note: date must be in this format and the friday of that weekend
 
 

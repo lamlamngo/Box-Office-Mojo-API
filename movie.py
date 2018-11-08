@@ -8,11 +8,9 @@ class MovieWeekendEntry(object):
     def __init__(self, data):
         assert len(data) == len(self.labels) + 1
         self.json = {}
-        weekend = data[0]
-        self.json[weekend] = {}
         data.pop(0)
         for i in range(len(data)):
-            self.json[weekend][self.labels[i]] = data[i]
+            self.json[self.labels[i]] = data[i]
 
 class Weekend(object):
 
@@ -138,7 +136,7 @@ class Movie(object):
         if len(tables) > 0:
             rows = tables[-1].find_all('tr')
 
-            self.json["weekends"] = []
+            self.json["weekends"] = {}
 
             for row in rows:
                 if row['bgcolor'] is not None and row['bgcolor'] != '#dcdcdc':
@@ -148,4 +146,5 @@ class Movie(object):
                     for element in elements:
                         datas.append(element.find('font').string)
                     
-                    self.json["weekends"].append(MovieWeekendEntry(datas).json)
+                    date = datas[0]
+                    self.json["weekends"][date] = MovieWeekendEntry(datas).json
