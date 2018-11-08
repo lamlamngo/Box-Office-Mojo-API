@@ -96,9 +96,9 @@ class Movie(object):
                         category = None
                         if len(names) > 0:
                             if names[0].find('font') is None:
-                                category = names[0].string.strip()
+                                category = names[0].string.strip().replace(':', '')
                             else:
-                                category = names[0].find('font').string.strip()
+                                category = names[0].find('font').string.strip().replace(':', '')
 
                         if category is not None:
                             if category not in self.json["players"]:
@@ -111,11 +111,16 @@ class Movie(object):
                                     else:
                                         self.json["players"][category].append(names[1].string.strip())
                                 else:
-                                    multi_names = names[1].find_all('a')
-                                    if names[1].string is not None:
-                                        multi_names.insert(0, names[1].string)
-                                    for a_name in multi_names:
-                                        self.json["players"][category].append(a_name.string)
+                                    for content in names[1].contents:
+                                        if content.string is not None:
+                                            if content.string != "" and content.string != 'cameo':
+                                                self.json["players"][category].append(content.string.strip())
+                                        # if '<a' not in content and 'br' not in content:
+                                        #     print (content)
+                                        #     self.json["players"][category].append(content.strip())
+                                        # elif '<a' in content:
+                                        #     print (content)
+                                        #     self.json["players"][category].append(content.string.strip())
 
         overview = self.html.find('center')    
         components = overview.findAll('td', attrs={'valign' : 'top'})

@@ -189,4 +189,11 @@ class BoxOfficeMojo(object):
         date = "%d/%s/%s" % (recent_friday.year, str(recent_friday.month).zfill(2), str(recent_friday.day).zfill(2))
         return self.get_specific_weekend_stats(date, limit = limit)
 
+bom = BoxOfficeMojo(movie_read_from_file=True, weekend_read_from_file=True)
+print (bom.get_movie_stats_by_name('batman v superman'))
+# bom.get_all_movie_links_in_page("")
+# bom.crawl_for_weekend_urls()
+# bom.get_latest_weekend_stats()
+# bom.get_specific_weekend_stats("2018/08/03")
+
 
